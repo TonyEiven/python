@@ -1,0 +1,70 @@
+import os
+class twemproxy():
+	def gccInstall(self):
+		if int(os.popen('rpm -qa|grep gcc|wc -l').read())>1:
+			os.system('cd '+self.path+';ls;make')
+		else:
+			os.system('yum -y install gcc;')
+		print self.path+'is ok-------------------------------------------'
+	def redisInstall(self,path):
+		self.path = path
+		if int(os.popen('rpm -qa|grep gcc|wc -l').read())>1:
+		    os.system('cd '+self.path+';ls;make')
+		else:
+		    os.system('yum -y install gcc;cd self.path;ls;make;make install')
+		#os.system('echo "nvm.overcommit_memory = 1">>/etc/sysctl.conf;sysctl -p')
+		#os.system('echo never > /sys/kernel/mm/transparent_hugepage/enabled;echo 1000 >/proc/sys/net/core/somaxconn')
+		#os.system('echo -ne "echo never > /sys/kernel/mm/transparent_hugepage/enabled;echo 1000 >/proc/sys/net/core/somaxconn">>/etc/rc.local')
+		os.system('echo "'+self.path+'/src/redis-server '+self.path+'/redis.conf">>/etc/rc.local')
+		#os.system('echo -ne " -A INPUT -p tcp -m tcp --dport 6379 -j ACCEPT">>/etc/sysconfig/iptables')
+		os.system(self.path+'/src/redis-server'+' '+self.path+'/redis.conf')
+		print self.path+'is ok-----------------------------------------------'
+	def twemproxyInstall(self,path):
+		self.xypath = path
+		os.system('cd '+self.xypath+';autoreconf -fvi;./configure --enable-debug=log;make;make install')
+		os.system('echo "'+self.xypath+'/src/nutcracker -d -c '+self.xypath+'/conf/nutcracker.yml">>/etc/rc.local')
+        def autoconfInstall(self,path):
+                self.autopath = path
+                os.system('cd '+self.autopath+';./configure;make;make install')
+	def xyconf(self,path):
+                self.xyconfpath = path
+                conf = '''alpha:
+ listen: 0.0.0.0:6379
+ hash: fnv1a_64
+ distribution: ketama
+ auto_eject_hosts: true
+ redis: true
+ server_retry_timeout: 2000
+ server_failure_limit: 1
+ servers:
+   - 127.0.0.1:6378:1
+   - 127.0.0.1:6377:1
+   - 127.0.0.1:6376:1'''
+                os.system('echo "'+conf+'">'+self.xyconfpath+'/conf/nutcracker.yml')
+if __name__ == '__main__':
+	def init(path):
+
+		redis='/root/cluster/redis'
+		redis2='/root/cluster/redis2'
+		redis3='/root/cluster/redis3'
+		autoconf='/root/cluster/autoconf'
+		xyph='/root/cluster/twemproxy'
+
+
+                os.system('tar zxvf '+path)
+		print 1,'ok-------------------------------------------'
+		t = twemproxy()
+		print 2,'ok-------------------------------------------'
+		t.redisInstall(redis)
+		print 3,'ok-------------------------------------------'
+		t.redisInstall(redis2)
+		print 4,'ok-------------------------------------------'
+		t.redisInstall(redis3)
+		print 5,'ok-------------------------------------------'
+		t.autoconfInstall(autoconf)
+		print 6,'ok-------------------------------------------'
+		t.twemproxyInstall(xyph)
+		print 7,'ok-------------------------------------------'
+		t.xyconf(xyph)
+		print 8,'ok-------------------------------------------'
+	init('/root/twemproxy.tar.gz')

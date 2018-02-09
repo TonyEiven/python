@@ -1,2 +1,2 @@
 # python
-This document have some storage about python resource code
+This document contains some resource code about Python
